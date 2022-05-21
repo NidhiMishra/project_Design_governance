@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Brewery style</title>
+    <link rel="stylesheet" href="style.css">
+     
+</head>
+
+<body id="body">
+<div id="app">
+    <div class="header">
+        <h1>Connect to breweries</h1>
+    </div>
+
+    <header class="topnav">
+        <a class="menu-item" href="#">Home</a>
+        <a class="menu-item" href="#" @click="showList()">My List ({{list.length}}) </a>
+       
+    </header>
+
+    <div id="addbeerlist">      
+        <form class="addbeer">
+            Name: <input type="text" name="name"  v-model="name" value="">
+            Color: <input type="text" name="color" v-model="color" value="">
+            Alcohol: <input type="number" name="alcohol" v-model="alcohol" value="">
+            Price: <input type="text" name="price" v-model="price" value="">
+            <button class="button" type="button" @click="addToList()">Add to list</button>
+              
+        </form>
+    </div>
+
+    <div v-if="displayList" id="list" style="z-index: 10;">
+        <span style="color: white;width: 5%;">My List</span>
+        <span id="closeList" @click="closeList()">X</span>
+        
+        <div id="beerList">
+            <div class="flex" v-for="b in list" style="justify-content: space-between;">
+                <div class="beer flex" style="justify-content: space-between; margin: 10px;width: 80%">
+                    <span style="width: calc(60% - 10px); margin-left: 10px">Name: </span>
+                    <span style="width: 40%">{{b.name}}</span>
+                    <br>
+
+                    <span style="width: calc(60% - 10px); margin-left: 10px">Color: </span>
+                    <span style="width: 40%">{{b.color}}</span>
+                    <br>
+
+                    <span style="width: calc(60% - 10px); margin-left: 10px">Alcohol: </span>
+                    <span style="width: 40%">{{b.alcohol}}</span>
+                    <br>
+
+                    <span style="width: calc(60% - 10px); margin-left: 10px">Price: </span>
+                    <span style="width: 40%">{{b.price}}</span>
+                    <br>
+                </div>
+                <button type="button" @click="removeToList(b)" style="border-radius: 20px;margin-right: 5%">Remove from list</button>
+            </div>
+        </div>
+        <button type="button" @click="sendTheList()" style="position: absolute;bottom: 5%;right: 5%;">Send the
+            List</button>
+            </div>
+    </div>  
+    
+    </div>
+    <table id="updateOrder">
+        <tr>
+            <th>Product</th>
+            <th>How much left</th>
+        </tr>
+        <tr>
+            <td>Beer 1</td>
+            <td>5 bottles</td>
+        </tr>
+        <tr>
+            <td>Beer 2</td>
+            <td>6 bottles</td>
+        </tr>
+        <tr>
+            <td>Beer 3</td>
+            <td>17 bottles</td>
+        </tr>
+        <tr>
+            <td>Beer 4</td>
+            <td>20 bottles</td>
+        </tr>
+    </table>
+</div>  
+<script>
+
+</script>
+<script type="text/javascript" src="vue.js"></script>
+<script>
+     Vue.createApp({
+       data(){
+               return{
+                   breweries:[],
+                   
+                   beers:[], // Stock all beers
+                   currentBeerList: "",
+                
+
+                   list:[],
+                   displayList: false,
+                   
+                   name:"",
+                   color:"",
+                   alcohol:"",
+                   price:"",
+
+                   serverUrl: "http://127.0.0.1:8080"
+               }
+       },
+       comuted:{},
+       methods:{
+        showList(){
+               this.displayList = true;
+        },
+        closeList(){
+               this.displayList = false;
+        },
+        addToList(){
+            
+            this.list.push({
+                name: this.name,
+                color: this.color,
+                alcohol: this.alcohol,
+                price: this.price,
+
+            });
+            
+            this.name="",
+            this.color="",
+            this.alcohol="",
+            this.price ="",
+
+            this.displayList = false;
+        },
+        removeToList(bToRemove){
+            console.log(this.list);
+            console.log(bToRemove)
+            this.list = this.list.filter(b => b != bToRemove);
+        
+        }
+        
+       },
+    
+
+    }).mount('#app')
+       
+</script>   
+</body>
+</html>
