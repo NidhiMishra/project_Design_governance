@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Brewery style</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Source+Sans+Pro:ital,wght@1,300&display=swap');
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Source+Sans+Pro:ital,wght@1,300&display=swap" rel="stylesheet">
+</head>
+<body id="body">
+<div id="app">
+    <div id="title">
+        <h1>Connect Breweries</h1>
+    </div>
+    <header class="topnav">
+        <a class="menu-item" href="#">Home</a>
+        <a class="menu-item" href="#">Contact</a>
+        <a class="menu-item" href="#">About</a>
+        <a class="menu-item" href="#" @click="showCart()">My Cart ({{cart.length}})</a>
+    </header>
+
+
+    <div class="flex" id="breweryList">
+        <div class="brewery" v-for="b in breweryToDisplay"  @click="showBrewery(b)">{{b.name}} - {{b.adresse}}</div>
+    </div>
+    <div class="flex" id="main">
+        <div class="flex fullBa" id="filters">
+            <div id="searchBar">
+                <input type="text" id="searchInput" v-model="searchInput" v-on:keyup="search()" value="" placeholder="Search for a beer or a brewery">
+            </div>
+            <div class="flex" id="autoFilters">
+                <div class="autoFilters" @click="doFilters('name')">Order by name</div>
+                <div class="autoFilters" @click="doFilters('alcohol asc')">Order by alcohol ASC</div>
+                <div class="autoFilters" @click="doFilters('alcohol desc')">Order by alcohol DESC</div>
+                <div class="autoFilters" @click="doFilters('color')">Order by color</div>
+                <div class="autoFilters" @click="doFilters(filtre)">filter 5</div>
+                <div class="autoFilters" @click="doFilters(filtre)">filter 6</div>
+            </div>
+        </div>
+        <div class="flex fullBa" id="beerListe">
+            <div class="beer" v-for="b in beersToDisplay" @click="showBeer(b)">{{b.name}} - {{b.color}} {{breweries[b.brewery].name}}</div>
+        </div>
+    </div>
+
+    <div v-if="displayBrewery" id="brewery">
+        <span id="closeBrewery" @click="closeBrewery()">X</span>
+        <div  class="flex" id="breweryHeader">
+            <div id="breweryName">
+                {{currentBrewery.name}}
+            </div>
+            <div id="breweryAdresse">{{currentBrewery.adresse}}</div>
+        </div>
+        <div class="flex" id="beerListeForBrewery">
+            <div class="beer" v-for="b in currentBrewery.beers" @click="showBeer(b)" >{{b.name}} - {{b.color}}</div>
+        </div>
+    </div>
+
+    <div v-if="displayBeer" id="beerShow">
+        <span id="closeBeer" @click="closeBeer()">X</span>
+        <div class="flex" id="beerContact">
+            <div id="headerBeer">
+                General information about the beer: {{currentBeer.name}}
+            </div>
+            <div class="beerInfo flex">
+                <span>Name:</span>
+                <span>{{currentBeer.name}}</span>
+            </div>
+            <div class="beerInfo flex">
+                <span>Color:</span>
+                <span>{{currentBeer.color}}</span>
+            </div>
+            <div class="beerInfo flex">
+                <span>Alcohol</span>
+                <span>{{currentBeer.alcool}}</span>
+            </div>
+            <div class="beerInfo flex">
+                <span>Brewery</span>
+                <span>{{breweries[currentBeer.brewery].name}}</span>
+            </div>
+            <div>
+                <label for="numberOfBeer">How many beers would you like ?</label>
+                <input type="number" name="numberOfBeer" v-model="numberbeer">
+                <button type="button" @click="addToCart()">Add to cart</button>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="displayCart" id="cart">
+        <span style="color: white;width: 5%">My cart</span>
+       <span id="closeCart" @click="closeCart()">X</span>
+
+        <div id="cartList" style="max-height: 80%;overflow-y: scroll">
+            <div  class="flex" v-for="b in cart" style="justify-content: space-between">
+                <div class="beer flex "style="justify-content: space-between; margin: 10px;width: 80%">
+                    <span style="width: calc(60% - 10px); margin-left: 10px">Name: </span><span style="width: 40%">{{b.name}}</span>
+                    <br>
+                    <span style="width: calc(60% - 10px); margin-left: 10px">Quantity: </span><span style="width: 40%"> {{b.quantity}}</span>
+                    <br>
+                </div>
+                <button type="button" @click="removeToCart(b.id)" style="border-radius: 20px;margin-right: 5%">Remove from cart</button>
+            </div>
+        </div>
+        <button type="button" @click="sendTheOrder()" style="position: absolute;bottom: 5%;right: 5%;">Send the order</button>
+    </div>
+
+</div>
+<script>
+
+</script>
+<script type="text/javascript" src="vue.js"></script>
+<script>
+
+   Vue.createApp({
+       data(){
+               return{
+                   breweries:[],
+                   searchInput: "",
+                   beers:[], // Stock all beers
+                   beersToDisplay:[], //Use for display the beer depending on the filters
+                   breweryToDisplay:[],
+                   currentBrewery: "",
+                   currentBeer:"",
+                   flagBeer: false,
+
+                   cart:[],
+                   numberbeer:10,
+
+                   displayBrewery: false,
+                   displayBeer: false,
+                   displayCart: false,
+
+                   serverUrl: "http://127.0.0.1:8080"
+               }
+       },
+       comuted:{},
+       methods:{
+           fakeBackend(){
+               var xmlHttp = new XMLHttpRequest();
+               xmlHttp.open( "GET", this.serverUrl+"/breweries", false ); // false for synchronous request
+               xmlHttp.send( null );
+               this.breweries = JSON.parse(xmlHttp.responseText);
+               this.breweryToDisplay = JSON.parse(xmlHttp.responseText);
+               for (var i = 0; i < this.breweries.length; i++) {
+                   for (var k=0; k< this.breweries[i].breweryBeer.length;k++){
+                       this.beersToDisplay.push(this.breweries[i].breweryBeer[k]);
+                       this.beers.push(this.breweries[i].breweryBeer[k]);
+                   }
+               }
+               console.log(this.beersToDisplay);
+               console.log(this.breweryToDisplay);
+           },
+           showBrewery(newBrewery){
+               this.displayBrewery = true;
+               this.currentBrewery = newBrewery;
+           },
+           closeBrewery(){
+               this.displayBrewery = false;
+               this.currentBrewery = null;
+           },
+           showBeer(beer){
+               if(this.displayBrewery){
+                   //We come a a brewery so we need to keep the brewery in memory and close de the brewery div
+                   this.flagBeer = true;
+                   this.displayBrewery = false;
+               }
+               this.currentBeer = beer;
+               this.displayBeer = true;
+           },
+           closeBeer(){
+               this.currentBeer = null;
+               this.displayBeer = false;
+               if(this.flagBeer){
+                   this.displayBrewery = true;
+               }
+               this.flagBeer = false;
+           },
+           search(){
+                this.beersToDisplay = this.beers.filter(b=>b.name.includes(this.searchInput))
+                this.breweryToDisplay = this.breweries.filter(b=>b.name.includes(this.searchInput))
+           },
+           doFilters(filter){
+               //if filter not in activatedFilters
+               switch (filter){
+                   case "name":
+                       this.beersToDisplay.sort((a,b)=>a.name.localeCompare(b.name));
+                       break;
+                   case "alcohol asc":
+                       this.beersToDisplay.sort((a,b)=>a.alcool - b.alcool);
+                       break;
+                   case "alcohol desc":
+                       this.beersToDisplay.sort((a,b)=>a.alcool - b.alcool);
+                       this.beersToDisplay.reverse();
+                       break;
+                   case "color":
+                       this.beersToDisplay.sort((a,b)=>a.color.localeCompare(b.color));
+                       break;
+               }
+           },
+           showCart(){
+               this.displayCart = true;
+           },
+           closeCart(){
+               this.displayCart = false;
+           },
+           addToCart(){
+               this.cart.push({
+                   id: this.currentBeer.id,
+                   name: this.currentBeer.name,
+                   quantity: this.numberbeer,
+               })
+               this.displayBeer = false;
+           },
+           removeToCart(idToRemove){
+               this.cart = this.cart.filter(beer => beer.id != idToRemove);
+           },
+           sendTheOrder(){
+               var payload = JSON.stringify(this.cart);
+               var xhr = new XMLHttpRequest();
+               var cart = this.cart;
+               var dc = this.displayCart;
+               xhr.open("POST",  this.serverUrl+"/order", false );
+
+               xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+               xhr.onreadystatechange = function() {//Appelle une fonction au changement d'état.
+                   console.log(this.status);
+                   if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                       document.getElementById("closeCart").click();
+                       alert("You order has been succesfully send")
+                   }
+               }
+               xhr.send(payload);
+           }
+       },
+       created(){
+           this.fakeBackend();
+       },
+       beforeMount(){
+
+       },
+   }).mount('#app')
+</script>
+</body>
+</html>
