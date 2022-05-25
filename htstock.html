@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Warehouse style (index)</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&family=Source+Sans+Pro:ital,wght@1,300&display=swap');
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Source+Sans+Pro:ital,wght@1,300&display=swap" rel="stylesheet">
+</head>
+
+<body id="body">
+  <div id="app">
+      <div id="title">
+          <h1>Warehouse stock</h1>
+      </div>
+      <header class="topnav">
+        <a class="menu-item" href="index.html">Home</a>
+        <a class="menu-item" href="htcontact.html">Contact</a>
+        <a class="menu-item" href="htstock.html">Stock</a>
+        <a class="menu-item" href="htorders.html">Orders</a>
+    </header>
+
+
+    <div class="flex" id="main">
+      <div class="flex fullBa" id="filters">
+          <div id="searchBar">
+              <input type="text" id="searchInput" v-model="searchInput" v-on:keyup="search()" value="" placeholder="Search for a beer">
+          </div>
+          <div class="flex" id="autoFilters">
+              <div class="autoFilters" @click="doFilters('AZ')">Sort by name (A-Z)</div>
+              <div class="autoFilters" @click="doFilters('ZA')">Sort by name (Z-A)</div>
+          </div>
+      </div>
+      <div class="flex fullBa" id="beerListe">
+        <div class="beer" v-for="b in beersToDisplay" @click="showBeer(b)">{{b.name}} - {{b.color}} - {{breweries[b.brewery - 1].name}}</div>
+    </div>
+</div>
+
+
+<div v-if="displayBeer" id="beerShow">
+    <span id="closeBeer" @click="closeBeer()">X</span>
+    <div class="flex" id="beerContact">
+        <div id="headerBeer">
+            General information about the beer: {{currentBeer.name}}
+        </div>
+        <div class="beerInfo flex">
+            <span>Name:</span>
+            <span>{{currentBeer.name}}</span>
+        </div>
+        <div class="beerInfo flex">
+            <span>Color:</span>
+            <span>{{currentBeer.color}}</span>
+        </div>
+        <div class="beerInfo flex">
+            <span>Alcohol</span>
+            <span>{{currentBeer.alcool}}</span>
+        </div>
+        <div class="beerInfo flex">
+            <span>Brewery</span>
+            <span>{{breweries[currentBeer.brewery].name}}</span>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="vue.js"></script>
+<script>
+
+Vue.createApp({
+   data(){
+           return{
+                   breweries:[],
+                   searchInput: "",
+                   beers:[], // Stock all beers
+                   beersToDisplay:[], //Use for display the beer depending on the filters
+                   breweryToDisplay:[],
+                   currentBrewery: "",
+                   currentBeer:"",
+                   flagBeer: false,
+
+                   numberbeer:10,
+
+                   displayBrewery: false,
+                   displayBeer: false,
+           }
+   },
+   comuted:{},
+   methods:{
+       fakeBackend(){
+           const color=['Blond','red','brown','white']
+           for (var i=1;i<= 10;i++){
+               var tmpBrewery = {id: i,name:'brewery_'+i, adresse:'adresse '+i, beers: []};
+               for (beer=11; beer <=21; beer+=2){
+                   var beerObject = {
+                       brewery: tmpBrewery.id,
+                       id: i*beer,
+                       name: (Math.random() + 1).toString(36).substring(7), // create random name
+                       color: color[Math.floor(Math.random() * color.length)],
+                       alcool:(Math.random() + 4).toFixed(1)
+                   }
+                   tmpBrewery.beers.push(beerObject);
+                   this.beers.push(beerObject);
+                   this.beersToDisplay.push(beerObject);
+               }
+
+               this.breweries.push(tmpBrewery);
+               this.breweryToDisplay.push(tmpBrewery);
+           }
+           console.log(this.breweries)
+       },
+
+       showBeer(beer){
+           if(this.displayBrewery){
+               //We come a brewery so we need to keep the brewery in memory and close the brewery div
+               this.flagBeer = true;
+               this.displayBrewery = false;
+           }
+           this.currentBeer = beer;
+           this.displayBeer = true;
+       },
+       closeBeer(){
+           this.currentBeer = null;
+           this.displayBeer = false;
+           if(this.flagBeer){
+               this.displayBrewery = true;
+           }
+           this.flagBeer = false;
+       },
+       search(){
+            this.beersToDisplay = this.beers.filter(b=>b.name.includes(this.searchInput))
+            this.breweryToDisplay = this.breweries.filter(b=>b.name.includes(this.searchInput))
+       },
+       doFilters(filter){
+           //if filter not in activatedFilters
+           switch (filter){
+               case "AZ":
+                   this.beersToDisplay.sort((a,b)=>a.name.localeCompare(b.name));
+                   break;
+               case "ZA":
+                   this.beersToDisplay.sort((a,b)=>a.name.localeCompare(b.name));
+                   this.beersToDisplay.reverse();
+                   break;
+           }
+       },
+
+   },
+   created(){
+       this.fakeBackend();
+   },
+   beforeMount(){
+
+   },
+}).mount('#app')
+</script>
+</body>
+</html>
