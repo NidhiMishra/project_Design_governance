@@ -56,9 +56,8 @@
                 <button type="button" @click="removeToList(b)" style="border-radius: 20px;margin-right: 5%">Remove from list</button>
             </div>
         </div>
-        <button type="button" @click="sendTheList()" style="position: absolute;bottom: 5%;right: 5%;">Send the
-            List</button>
-            </div>
+        <button type="button" @click="sendTheList()" style="position: absolute;bottom: 5%;right: 5%;">Send the List</button>
+            
     </div>  
     
     </div>
@@ -107,6 +106,7 @@
                    alcohol:"",
                    price:"",
 
+                   serverUrl: "http://127.0.0.1:8080"
                 
                }
        },
@@ -140,12 +140,29 @@
             console.log(bToRemove)
             this.list = this.list.filter(b => b != bToRemove);
         
-        }
-        
-       },
-    
+        },
+        sendTheList(){
+           var payload = JSON.stringify(this.list);
+           var xhr = new XMLHttpRequest();
+           var list = this.list;
+           var dl = this.displayList;
+           xhr.open("POST",  this.serverUrl+"/order", false ); //it should use "/add" instead of "/order"
 
-    }).mount('#app')
+           xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+           xhr.onreadystatechange = function(){
+               console.log(this.status);
+               if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                   document.getElementById("closeList").click();
+                   alert("Your list has been successfully send")
+               }
+           }
+           xhr.send(payload);
+        }
+    },
+  
+   
+}).mount('#app')
        
 </script>   
 </body>
