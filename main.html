@@ -21,9 +21,11 @@
 
     <div id="addbeerlist">      
         <form class="addbeer">
+            Brewery: <input type="text" name="brewery"  v-model="brewery" value="">
             Name: <input type="text" name="name"  v-model="name" value="">
             Color: <input type="text" name="color" v-model="color" value="">
-            Alcohol: <input type="number" name="alcohol" v-model="alcohol" value="">
+            Alcool: <input type="number" name="alcool" v-model="alcool" value="">
+            Quantity: <input type="number" name="quantity" v-model="quantity" value="">
             Price: <input type="text" name="price" v-model="price" value="">
             <button class="button" type="button" @click="addToList()">Add to list</button>
               
@@ -37,6 +39,10 @@
         <div id="beerList">
             <div class="flex" v-for="b in list" style="justify-content: space-between;">
                 <div class="beer flex" style="justify-content: space-between; margin: 10px;width: 80%">
+                    <span style="width: calc(60% - 10px); margin-left: 10px">Brewery: </span>
+                    <span style="width: 40%">{{b.brewery}}</span>
+                    <br>
+
                     <span style="width: calc(60% - 10px); margin-left: 10px">Name: </span>
                     <span style="width: 40%">{{b.name}}</span>
                     <br>
@@ -45,8 +51,12 @@
                     <span style="width: 40%">{{b.color}}</span>
                     <br>
 
-                    <span style="width: calc(60% - 10px); margin-left: 10px">Alcohol: </span>
-                    <span style="width: 40%">{{b.alcohol}}</span>
+                    <span style="width: calc(60% - 10px); margin-left: 10px">Alcool: </span>
+                    <span style="width: 40%">{{b.alcool}}</span>
+                    <br>
+
+                    <span style="width: calc(60% - 10px); margin-left: 10px">Quantity: </span>
+                    <span style="width: 40%">{{b.quantity}}</span>
                     <br>
 
                     <span style="width: calc(60% - 10px); margin-left: 10px">Price: </span>
@@ -101,10 +111,12 @@
                    list:[],
                    displayList: false,
                    
+                   brewery:"",
                    name:"",
                    color:"",
-                   alcohol:"",
+                   alcool:"",
                    price:"",
+                   quantity:"",
 
                    serverUrl: "http://127.0.0.1:8080"
                 
@@ -121,17 +133,20 @@
         addToList(){
             
             this.list.push({
+                brewery: this.brewery,
                 name: this.name,
                 color: this.color,
-                alcohol: this.alcohol,
+                alcool: this.alcool,
                 price: this.price,
-
+                quantity:this.quantity,
             });
             
+            this.brewery="",
             this.name="",
             this.color="",
-            this.alcohol="",
+            this.alcool="",
             this.price ="",
+            this.quantity = "",
 
             this.displayList = false;
         },
@@ -146,7 +161,7 @@
            var xhr = new XMLHttpRequest();
            var list = this.list;
            var dl = this.displayList;
-           xhr.open("POST",  this.serverUrl+"/order", false ); //it should use "/add" instead of "/order"
+           xhr.open("POST",  this.serverUrl+"/add", false );
 
            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
