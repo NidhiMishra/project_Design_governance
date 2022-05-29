@@ -58,17 +58,9 @@ def getBeersForBrewery(request):
 
 async def createBeer(request):
      data = await request.json()
-     beer = {
-         "brewery": data["brewery"],
-         "id": random.randint(1, 1000),
-         "name":  data["name"],
-         "color": data["color"],
-         "alcool":data["alcool"],
-         "quantity": data["quantity"],
-         "price": data["price"]
-     }
+     beer = data
      print(beer)
-     breweries[data["brewery"]]["breweryBeer"].append(beers)
+     breweries[1]['breweryBeer'].append (beer)
      return web.Response()
 
 def getNoManyBeers(request):
