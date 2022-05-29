@@ -24,7 +24,7 @@
             Brewery: <input type="text" name="brewery"  v-model="brewery" value="">
             Name: <input type="text" name="name"  v-model="name" value="">
             Color: <input type="text" name="color" v-model="color" value="">
-            Alcool: <input type="number" name="alcool" v-model="alcool" value="">
+            Alcool: <input type="number" name="alcool" v-model="alcool" value=""><a>%</a>
             Quantity: <input type="number" name="quantity" v-model="quantity" value="">
             Price: <input type="text" name="price" v-model="price" value="">
             <button class="button" type="button" @click="addToList()">Add to list</button>
@@ -52,7 +52,7 @@
                     <br>
 
                     <span style="width: calc(60% - 10px); margin-left: 10px">Alcool: </span>
-                    <span style="width: 40%">{{b.alcool}}</span>
+                    <span style="width: 40%">{{b.alcool}}%</span>
                     <br>
 
                     <span style="width: calc(60% - 10px); margin-left: 10px">Quantity: </span>
