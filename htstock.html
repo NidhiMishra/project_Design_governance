@@ -11,13 +11,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&family=Source+Sans+Pro:ital,wght@1,300&display=swap" rel="stylesheet">
 </head>
-
 <body id="body">
-  <div id="app">
-      <div id="title">
-          <h1>Warehouse stock</h1>
-      </div>
-      <header class="topnav">
+<div id="app">
+    <div id="title">
+        <h1>Warehouse stock</h1>
+    </div>
+    <header class="topnav">
         <a class="menu-item" href="index.html">Home</a>
         <a class="menu-item" href="htcontact.html">Contact</a>
         <a class="menu-item" href="htstock.html">Stock</a>
@@ -36,7 +35,7 @@
           </div>
       </div>
       <div class="flex fullBa" id="beerListe">
-        <div class="beer" v-for="b in beersToDisplay" @click="showBeer(b)">{{b.name}} - {{b.color}} - {{breweries[b.brewery - 1].name}}</div>
+        <div class="beer" v-for="b in beersToDisplay" @click="showBeer(b)">{{b.name}} - {{b.quantity}}</div>
     </div>
 </div>
 
@@ -45,7 +44,7 @@
     <span id="closeBeer" @click="closeBeer()">X</span>
     <div class="flex" id="beerContact">
         <div id="headerBeer">
-            General information about the beer: {{currentBeer.name}}
+            Details about the beer: {{currentBeer.name}}
         </div>
         <div class="beerInfo flex">
             <span>Name:</span>
@@ -63,14 +62,18 @@
             <span>Brewery</span>
             <span>{{breweries[currentBeer.brewery].name}}</span>
         </div>
+        <div class="beerInfo flex">
+            <span>Quantity</span>
+            <span>{{currentBeer.quantity}}</span>
+        </div>
     </div>
 </div>
 
 <script type="text/javascript" src="vue.js"></script>
 <script>
 
-Vue.createApp({
-   data(){
+    Vue.createApp({
+        data(){
            return{
                    breweries:[],
                    searchInput: "",
@@ -85,32 +88,37 @@ Vue.createApp({
 
                    displayBrewery: false,
                    displayBeer: false,
+                   
+                   serverUrl: "http://127.0.0.1:8080"
+
            }
    },
-   comuted:{},
-   methods:{
-       fakeBackend(){
-           const color=['Blond','red','brown','white']
-           for (var i=1;i<= 10;i++){
-               var tmpBrewery = {id: i,name:'brewery_'+i, adresse:'adresse '+i, beers: []};
-               for (beer=11; beer <=21; beer+=2){
-                   var beerObject = {
-                       brewery: tmpBrewery.id,
-                       id: i*beer,
-                       name: (Math.random() + 1).toString(36).substring(7), // create random name
-                       color: color[Math.floor(Math.random() * color.length)],
-                       alcool:(Math.random() + 4).toFixed(1)
-                   }
-                   tmpBrewery.beers.push(beerObject);
-                   this.beers.push(beerObject);
-                   this.beersToDisplay.push(beerObject);
-               }
-
-               this.breweries.push(tmpBrewery);
-               this.breweryToDisplay.push(tmpBrewery);
-           }
-           console.log(this.breweries)
-       },
+    comuted:{},
+    methods:{
+        fakeBackend(){
+             const color=['Blond','red','brown','white']
+             for (var i=1;i<= 10;i++){
+                 var tmpBrewery = {id: i,name:'brewery_'+i, adresse:'adresse '+i, beers: []};
+                 for (beer=11; beer <21; beer+=2){
+                     var beerObject = {
+                         brewery: tmpBrewery.id,
+                         id: i*beer,
+                         name: (Math.random() + 1).toString(36).substring(7), // create random name
+                         color: color[Math.floor(Math.random() * color.length)],
+                         alcool:(Math.random() + 4).toFixed(1),
+                         quantity:(Math.floor(Math.random()* (200) +1)),
+                         address: (Math.random() + 1).toString(36).substring(12), // create random name
+                     }
+                     tmpBrewery.beers.push(beerObject);
+                     this.beers.push(beerObject);
+                     this.beersToDisplay.push(beerObject);
+                 }
+  
+                 this.breweries.push(tmpBrewery);
+                 this.breweryToDisplay.push(tmpBrewery);
+             }
+             console.log(this.breweries)
+         },
 
        showBeer(beer){
            if(this.displayBrewery){
