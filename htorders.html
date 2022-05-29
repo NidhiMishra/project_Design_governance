@@ -35,7 +35,7 @@
             </div>
         </div>
         <div class="flex fullBa" id="beerListe">
-          <div class="beer" v-for="b in beersToDisplay" @click="showBeer(b)">{{b.name}} - {{b.color}} - {{breweries[b.brewery - 1].name}}</div>
+          <div class="beer" v-for="b in beersToDisplay" @click="showBeer(b)">{{b.order}} - {{b.date}} - {{b.quantity}}</div>
         </div>
   </div>
 
@@ -44,24 +44,36 @@
       <span id="closeBeer" @click="closeBeer()">X</span>
       <div class="flex" id="beerContact">
           <div id="headerBeer">
-              General information about the order: {{currentBeer.name}}
+              Details about the order: {{currentBeer.order}}
           </div>
           <div class="beerInfo flex">
               <span>Name:</span>
-              <span>{{currentBeer.name}}</span>
+              <span>{{currentBeer.order}}</span>
           </div>
           <div class="beerInfo flex">
-              <span>Color:</span>
-              <span>{{currentBeer.color}}</span>
+              <span>Date:</span>
+              <span>{{currentBeer.date}}</span>
           </div>
           <div class="beerInfo flex">
-              <span>Alcohol</span>
-              <span>{{currentBeer.alcool}}</span>
+              <span>Client name</span>
+              <span>{{currentBeer.client}}</span>
           </div>
           <div class="beerInfo flex">
-              <span>Brewery</span>
-              <span>{{breweries[currentBeer.brewery].name}}</span>
+              <span>Client address</span>
+              <span>{{currentBeer.address}}</span>
           </div>
+        <div class="beerInfo flex">
+            <span>Beer</span>
+            <span>{{currentBeer.name}}</span>
+        </div>
+        <div class="beerInfo flex">
+            <span>Quantity</span>
+            <span>{{currentBeer.quantity}}</span>
+        </div>
+        <div>
+            <label for="numberOfBeer">Has this order been delivered ?</label>
+            <button type="button" >Terminate order <br></button>
+        </div>
       </div>
   </div>
 
@@ -70,7 +82,7 @@
   
   Vue.createApp({
      data(){
-             return{
+            return{
                    breweries:[],
                    searchInput: "",
                    beers:[], // Stock all beers
@@ -87,10 +99,10 @@
 
                    orders:[],
                    orderToDisplay:[],
-                   currentOrder:""
+                   currentOrder:"",
 
-
-             }
+                   serverUrl: "http://127.0.0.1:8080"
+            }
      },
      comuted:{},
      methods:{
@@ -98,13 +110,21 @@
              const color=['Blond','red','brown','white']
              for (var i=1;i<= 10;i++){
                  var tmpBrewery = {id: i,name:'brewery_'+i, adresse:'adresse '+i, beers: []};
-                 for (beer=11; beer <21; beer+=2){
+                 for (beer=11; beer <21; beer+=8){
                      var beerObject = {
                          brewery: tmpBrewery.id,
                          id: i*beer,
                          name: (Math.random() + 1).toString(36).substring(7), // create random name
                          color: color[Math.floor(Math.random() * color.length)],
-                         alcool:(Math.random() + 4).toFixed(1)
+                         alcool:(Math.random() + 4).toFixed(1),
+
+                         date:("0" + i + ".06.2022"),
+                         quantity:(Math.floor(Math.random()* (200) +1)),
+                         client:("Max Muster"),
+                         address: ("Musterstrasse 1, 1234 Musterstadt"),
+                         order:((Math.random()+4).toString(36).substring(7)),
+
+                         
                      }
                      tmpBrewery.beers.push(beerObject);
                      this.beers.push(beerObject);
@@ -159,7 +179,6 @@
              this.displayOrder = false;
              this.flagBeer = false;
          },
-
 
      },
      created(){
