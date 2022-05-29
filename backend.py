@@ -60,7 +60,7 @@ async def createBeer(request):
      data = await request.json()
      beer = data
      print(beer)
-     breweries[1]['breweryBeer'].append (beer)
+     breweries[1]['breweryBeer'].append(beer)
      return web.Response()
 
 def getNoManyBeers(request):
