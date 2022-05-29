@@ -161,6 +161,8 @@
            var xhr = new XMLHttpRequest();
            var list = this.list;
            var dl = this.displayList;
+            
+            // still have an error on "/add" (TypeError: list indices must be integers or slices, not str)
            xhr.open("POST",  this.serverUrl+"/add", false );
 
            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
